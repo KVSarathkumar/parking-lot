@@ -2,26 +2,18 @@ let express=require("express");
 let bodyparser=require("body-parser");
 let app=express();
 
-
 let cookieparser=require("cookie-parser");
 let auth=require("./controllers/auth");
 let mongoose=require("mongoose");
 let jwt=require('jsonwebtoken');
-let secret='djnk68kn8h';
+
+
 mongoose.connect('mongodb://localhost:27017/parking-lot', {
 	useNewUrlParser: true,
 	useUnifiedTopology:true
 });
-
-
-
-const usersRouter=require("./routes/users")
-const {cur}=usersRouter.cur;
-
-
-
-
-
+let usersRouter=require('./routes/users');
+let {cur}=usersRouter.cur;
 app.use(express.static('public'));
 app.use(express.json());
 app.use('/users',usersRouter.router);
@@ -48,13 +40,91 @@ user1.save();*/
 		   {
 	if(err){console.log("oops");}
 });*/
-// user.find({}, function (err,Allusers){if(err){console.log("oops");}
-// else {
-// console.log(Allusers);
-// }
-// });
+/*user.find({}, function (err,Allusers){if(err){console.log("oops");}
+else {
+console.log(Allusers);
+}
+});*/
 let slot=require("./modules/slot").slot;
-
+/*let slot1=new slot({
+	slotid:1,
+	occupancy:false
+})
+slot1.save();
+let slot2=new slot({
+	slotid:2,
+	occupancy:false
+})
+slot2.save();
+let slot3=new slot({
+	slotid:3,
+	occupancy:false
+})
+slot3.save();
+let slot4=new slot({
+	slotid:4,
+	occupancy:false
+})
+slot4.save();
+let slot5=new slot({
+	slotid:5,
+	occupancy:false
+})
+slot5.save();
+let slot6=new slot({
+	slotid:6,
+	occupancy:false
+})
+slot6.save();
+let slot7=new slot({
+	slotid:7,
+	occupancy:false
+})
+slot7.save();
+let slot8=new slot({
+	slotid:8,
+	occupancy:false
+})
+slot8.save();
+let slot9=new slot({
+	slotid:9,
+	occupancy:false
+})
+slot9.save();
+let slot10=new slot({
+	slotid:10,
+	occupancy:false
+})
+slot10.save();
+let slot11=new slot({
+	slotid:11,
+	occupancy:false
+})
+slot11.save();
+let slot12=new slot({
+	slotid:12,
+	occupancy:false
+})
+slot12.save();
+let slot13=new slot({
+	slotid:13,
+	occupancy:false
+})
+slot13.save();
+let slot14=new slot({
+	slotid:14,
+	occupancy:false
+})
+slot14.save();
+let slot15=new slot({
+	slotid:15,
+	occupancy:false
+})
+slot15.save();*/
+/*slot.remove({},function(err)
+		   {
+	if(err){console.log("oops");}
+});*/
 /*slot.find({}, function (err,Allslots){if(err){console.log("oops");}
 else {
 console.log(Allslots);
@@ -85,27 +155,83 @@ app.get('/parkinglot',(req,res)=>
 	res.render("parkinglot");
 })
 
-app.get('/vehicles',(req,res)=>{
+app.get('/vehicles',async(req,res)=>{
 	let token=req.cookies['auth_token'];
 	if(token && auth.checktoken(token)){
 		
 		/*jwt.verify(token,secret,function(err, decoded) {
-  var userId = decoded._id  
+  		var userId = decoded._id  
 		console.log(userId)
-};  */
+		};  */
+		 let curr=cur[0].name;
+		console.log(curr);
+		let curuser=await user.findOne().where({name:curr});
 		
-		res.render("vehicles",{cur:cur[0]});
-		console.log(cur[0]);
+		
+		var vehiclearr=[];
+		curuser.vehicles.forEach(async function(vehi){
+			console.log(vehi._id.vehiclenum)
+			let abc=await vehicle.findOne().where({_id:vehi._id});
+			if(abc)
+				{
+					await vehiclearr.push(abc);
+				} 
+			
+			
+		})
+		
+		
+// let myPromise = new Promise(function(myResolve, myReject) {
+// 	  curuser.vehicles.forEach( async function(vehi){
+// 				let abc=await vehicle.findOne().where({_id:vehi._id});
+// 				if(abc)
+// 					{
+// 						vehiclearr.push(abc);
+// 						console.log(abc.vehiclenum);
+// 					}
+
+
+// 		})
+// 		console.log("Code after for each")
+	
+
+// 	// The producing code (this may take some time)
+
+
+// 		myResolve();
+
+// 		myReject();
+
+// 	});
+
+// 	myPromise.then(
+// 	  function(value) {
+// 			console.log("Running success condition")
+// 		  	console.log(vehiclearr) ;
+					  
+	res.render("vehicles",{cur:curuser,vehiclesdb:vehicle});
+					  
+					  
+// 					  },
+// 	  function(error) {console.log(error);}
+// 	);
+		
+		
+		
+		
+		// await console.log(vehiclearr);
 		
 	}
 	else{
+		// console.log("Running error condition")
 		res.redirect("/login");
 	}
 	
 })
+
+
 app.get('/addvehicle',(req,res)=>{
 	res.render("addvehicle");
-	
 })
 
 app.post('/addvehicle',async(req,res)=>{
@@ -118,6 +244,13 @@ app.post('/addvehicle',async(req,res)=>{
 		})
 		console.log("success");
 	await newvehicle.save();
+	let curr=cur[0].name;
+	console.log(curr);
+	let curuser=await user.findOne().where({name:curr});
+	console.log(curuser);
+	await curuser.vehicles.push(newvehicle);
+	curuser.save();
+	res.redirect("/vehicles");
 	
 })
 /*vehicle.find({},function(err,allvehicles){if(err){console.log("oops");}
@@ -130,6 +263,5 @@ console.log(allusers);
 }});*/
 
 app.listen('3000',()=>{
-	console.log("listening to port 3000")
+	console.log("listening to port 3002")
 })
-

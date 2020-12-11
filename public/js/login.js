@@ -41,3 +41,5 @@ registerform.addEventListener('submit',function(e)
 		body:JSON.stringify({email,password,name,phoneno})
 	}).then((resp)=>resp.text()).then((data)=>alert(data));
 })
+
+
