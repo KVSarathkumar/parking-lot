@@ -159,71 +159,27 @@ app.get('/vehicles',async(req,res)=>{
 	let token=req.cookies['auth_token'];
 	if(token && auth.checktoken(token)){
 		
-		/*jwt.verify(token,secret,function(err, decoded) {
-  		var userId = decoded._id  
-		console.log(userId)
-		};  */
 		 let curr=cur[0].name;
-		console.log(curr);
+		
 		let curuser=await user.findOne().where({name:curr});
 		
 		
-		var vehiclearr=[];
-		curuser.vehicles.forEach(async function(vehi){
-			console.log(vehi._id.vehiclenum)
-			let abc=await vehicle.findOne().where({_id:vehi._id});
-			if(abc)
-				{
-					await vehiclearr.push(abc);
-				} 
+		let vehiclearr=[];
+		 let vehi=curuser.vehicles;
+		
+		
+		let i;
+		for(i=0;i<vehi.length;i++)
+			{
+				let abc=await vehicle.findOne().where({_id:vehi[i]});
+				vehiclearr.push(abc);
+			}
 			
-			
-		})
-		
-		
-// let myPromise = new Promise(function(myResolve, myReject) {
-// 	  curuser.vehicles.forEach( async function(vehi){
-// 				let abc=await vehicle.findOne().where({_id:vehi._id});
-// 				if(abc)
-// 					{
-// 						vehiclearr.push(abc);
-// 						console.log(abc.vehiclenum);
-// 					}
-
-
-// 		})
-// 		console.log("Code after for each")
-	
-
-// 	// The producing code (this may take some time)
-
-
-// 		myResolve();
-
-// 		myReject();
-
-// 	});
-
-// 	myPromise.then(
-// 	  function(value) {
-// 			console.log("Running success condition")
-// 		  	console.log(vehiclearr) ;
-					  
-	res.render("vehicles",{cur:curuser,vehiclesdb:vehicle});
-					  
-					  
-// 					  },
-// 	  function(error) {console.log(error);}
-// 	);
-		
-		
-		
-		
-		// await console.log(vehiclearr);
+				res.render("vehicles",{cur:curuser,vehicles:vehiclearr});
 		
 	}
 	else{
-		// console.log("Running error condition")
+		
 		res.redirect("/login");
 	}
 	
@@ -253,6 +209,15 @@ app.post('/addvehicle',async(req,res)=>{
 	res.redirect("/vehicles");
 	
 })
+
+app.post('/bookslot',async(req,res)=>{
+		console.log(req.body.exampleRadios);
+		res.send("slot is booked");
+	
+})
+
+
+
 /*vehicle.find({},function(err,allvehicles){if(err){console.log("oops");}
 else {
 console.log(allvehicles);
@@ -263,5 +228,5 @@ console.log(allusers);
 }});*/
 
 app.listen('3000',()=>{
-	console.log("listening to port 3002")
+	console.log("listening to port 3000")
 })
