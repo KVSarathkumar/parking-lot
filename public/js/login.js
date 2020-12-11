@@ -5,7 +5,7 @@ signinform.addEventListener('submit',function(e)
 	e.preventDefault();
 	let email=document.getElementById('sign-in-email').value;
 	let password=document.getElementById('sign-in-password').value;
-	fetch('https://parking-lot.run-ap-south1.goorm.io/users/login',{
+	fetch('http://localhost:3000/users/login',{
 		method: 'POST',
 		headers:{
 			'Content-Type' :'application/json'
@@ -33,7 +33,7 @@ registerform.addEventListener('submit',function(e)
 		{
 			return;
 		}
-	fetch('https://parking-lot.run-ap-south1.goorm.io/users/register',{
+	fetch('http://localhost:3000/users/register',{
 		method: 'POST',
 		headers:{
 			'Content-Type' :'application/json'
