@@ -28,6 +28,7 @@ db.once("open",()=>{
 })
 let vehicle=require("./modules/user").vehicle;
 let user=require("./modules/user").user;
+let booking=require("./modules/user").booking;
 
 /*let user1=new user({
 	id:1,
@@ -45,7 +46,7 @@ else {
 console.log(Allusers);
 }
 });*/
-let slot=require("./modules/slot").slot;
+let slot=require("./modules/user").slot;
 /*let slot1=new slot({
 	slotid:1,
 	occupancy:false
@@ -190,6 +191,13 @@ app.get('/addvehicle',(req,res)=>{
 	res.render("addvehicle");
 })
 
+app.get('/stop',(req,res)=>{
+	res.render("stop");
+})
+
+
+
+
 app.post('/addvehicle',async(req,res)=>{
 		let vehiclenumber=req.body.vehicleno;
 		let vehicletype=req.body.vehicletype;
@@ -211,10 +219,45 @@ app.post('/addvehicle',async(req,res)=>{
 })
 
 app.post('/bookslot',async(req,res)=>{
-		console.log(req.body.exampleRadios);
-		res.send("slot is booked");
+		let vehicleno=req.body.exampleRadios;
+		let curvehicle=await vehicle.findOne().where({vehiclenum:vehicleno});
+		
+		let curr=cur[0].name;
+		
+		let curuser=await user.findOne().where({name:curr});
+
+		let emptyslot=await slot.findOne().where({occupancy:false});
+		if(emptyslot)
+		{
+		emptyslot.occupancy=true;
+		emptyslot.save();
+		let ans=await booking.find();
+		
+		
+		let newbooking=new booking({
+			booking_id:ans.length+1,
+			user_id:curuser._id,
+			vehicle_id:curvehicle._id,
+			slot_id:emptyslot._id,
+			intime:new Date()
+		})
+		newbooking.save();
+		console.log(newbooking);
+		res.redirect("/stop");
+		}
+		else
+		{
+			res.send("slot unavailable");
+		}
 	
 })
+
+
+
+
+
+
+
 
 
 
