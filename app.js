@@ -131,6 +131,11 @@ else {
 console.log(Allslots);
 }});*/
 
+// booking.remove({},function(err)
+// 		   {
+// 	if(err){console.log("oops");}
+// });
+
 app.get('/',(req,res)=>
 	   {
 	res.render("home");
@@ -253,7 +258,23 @@ app.post('/bookslot',async(req,res)=>{
 })
 
 
-
+app.post('/stop',async(req,res)=>{
+	let curr=cur[0]._id;
+	let curbooking=await booking.findOne().where({ user_id:curr,outtime:""});
+	curbooking.outtime=new Date();
+	curbooking.save();
+	
+	let curslotid=curbooking.slot_id;
+	let curslot=await slot.findOne().where({_id:curslotid});
+	console.log(curslot);
+	curslot.occupancy=false;
+	
+	curslot.save();
+	console.log(curslot);
+	console.log(curbooking);
+	res.redirect("/vehicles");
+	
+})
 
 
 
